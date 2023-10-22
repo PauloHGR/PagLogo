@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PagLogo", "PagLogo\PagLogo.csproj", "{9552D342-D466-4CCF-B8AE-B44C596583AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagLogoTests", "PagLogoTests\PagLogoTests.csproj", "{6D0F3819-FD28-4448-8A7E-8AD354177D17}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9552D342-D466-4CCF-B8AE-B44C596583AE} = {9552D342-D466-4CCF-B8AE-B44C596583AE}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9552D342-D466-4CCF-B8AE-B44C596583AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9552D342-D466-4CCF-B8AE-B44C596583AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9552D342-D466-4CCF-B8AE-B44C596583AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9552D342-D466-4CCF-B8AE-B44C596583AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D0F3819-FD28-4448-8A7E-8AD354177D17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D0F3819-FD28-4448-8A7E-8AD354177D17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D0F3819-FD28-4448-8A7E-8AD354177D17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D0F3819-FD28-4448-8A7E-8AD354177D17}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4173FE71-52EE-48E6-83F7-4EA76DAC2AC8}
+	EndGlobalSection
+EndGlobal
