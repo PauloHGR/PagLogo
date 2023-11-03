@@ -23,8 +23,26 @@ namespace PagLogo.Controllers
         [ProducesResponseType(404)]
         public async Task<User> GetUsers([FromQuery] string identifier)
         {
-            var result = await _userService.GetUsersAsync(identifier);
+            var result = await _userService.GetUserAsync(identifier);
             return result;
+        }
+
+        [HttpPost]
+        public async Task SaveUser([FromBody] Tradesman tradesman)
+        {
+            await _userService.SaveUserAsync(tradesman);
+        }
+
+        [HttpPut]
+        public async Task UpdateUser([FromBody] Tradesman tradesman)
+        {
+            await _userService.UpdateUserAsync(tradesman);
+        }
+
+        [HttpDelete]
+        public async Task DeleteUser([FromQuery] string identifier)
+        {
+            await _userService.DeleteUserAsync(identifier);
         }
     }
 }
