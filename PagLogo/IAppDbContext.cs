@@ -7,5 +7,6 @@ namespace PagLogo
     {
         DbSet<Generic>? Generics { get; set; }
         DbSet<Tradesman>? Tradesmans { get; set; }
+        int SaveChanges();
     }
 }
