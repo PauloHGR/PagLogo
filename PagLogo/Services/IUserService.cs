@@ -5,8 +5,8 @@ namespace PagLogo.Services
     public interface IUserService
     {
         Task<User> GetUserAsync(string identifier);
-        Task SaveUserAsync(Tradesman tradesman);
-        Task UpdateUserAsync(Tradesman tradesman);
+        Task SaveUserAsync(User user);
+        Task UpdateUserAsync(User user);
         Task DeleteUserAsync(string identifier);
     }
 }

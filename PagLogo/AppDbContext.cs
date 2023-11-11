@@ -8,7 +8,6 @@ namespace PagLogo
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public virtual DbSet<Generic>? Generics { get; set; }
-        public virtual DbSet<Tradesman>? Tradesmans { get; set; }
+        public virtual DbSet<User>? Users { get; set; }
     }
 }

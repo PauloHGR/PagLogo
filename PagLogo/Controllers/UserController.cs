@@ -28,15 +28,15 @@ namespace PagLogo.Controllers
         }
 
         [HttpPost]
-        public async Task SaveUser([FromBody] Tradesman tradesman)
+        public async Task SaveUser([FromBody] User user)
         {
-            await _userService.SaveUserAsync(tradesman);
+            await _userService.SaveUserAsync(user);
         }
 
         [HttpPut]
-        public async Task UpdateUser([FromBody] Tradesman tradesman)
+        public async Task UpdateUser([FromBody] User user)
         {
-            await _userService.UpdateUserAsync(tradesman);
+            await _userService.UpdateUserAsync(user);
         }
 
         [HttpDelete]

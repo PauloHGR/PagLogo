@@ -10,10 +10,10 @@ namespace PagLogo.Services
             _context = context;
         }
 
-        private Tradesman GetTradesmanByIdentifier(string identifier)
+        private User GetTradesmanByIdentifier(string identifier)
         {
-            var result = _context.Tradesmans.Select(user => user)
-                .Where(a => a.Cnpj == identifier).FirstOrDefault();
+            var result = _context.Users.Select(user => user)
+                .Where(a => a.Identifier == identifier).FirstOrDefault();
 
             if (result == null)
             {
@@ -28,48 +28,44 @@ namespace PagLogo.Services
             return GetTradesmanByIdentifier(identifier);
         }
 
-        public async Task SaveUserAsync(Tradesman tradesman)
+        public async Task SaveUserAsync(User user)
         {
             //Validate
 
-            var result = _context.Tradesmans.Select(user => user)
-                .Where(a => a.Cnpj == tradesman.Cnpj || a.Email == tradesman.Email).Any();
+            var result = _context.Users.Select(user => user)
+                .Where(a => a.Identifier == user.Identifier || a.Email == user.Email).Any();
 
             if(result) {
-                throw new UserException("Cnpj ou email já cadastrados");
+                throw new UserException("Usuário ou email já cadastrados");
             }
 
             //Save
-            _context.Tradesmans.Add(tradesman);
+            _context.Users.Add(user);
             _context.SaveChanges();
         }
 
-        public async Task UpdateUserAsync(Tradesman request)
+        public async Task UpdateUserAsync(User request)
         {
             //Validate
 
-            var oldTradesman = GetTradesmanByIdentifier(request.Cnpj); ;
+            var oldUser = GetTradesmanByIdentifier(request.Identifier); ;
 
-            var result = _context.Tradesmans.Select(user => user)
-               .Where(a => (a.Cnpj == request.Cnpj || a.Email == request.Email)
-               && a.Id != oldTradesman.Id).Any();
+            var result = _context.Users.Select(user => user)
+               .Where(a => a.Email == request.Email
+               && a.Id != oldUser.Id).Any();
 
             if (result)
             {
-                throw new UserException("Cnpj ou email já cadastrados.");
+                throw new UserException("Usuário ou email já cadastrados.");
             }
 
-            var tradesmanUpdated = new Tradesman
-            {
-                Cnpj = oldTradesman.Cnpj,
-                Email = oldTradesman.Email,
-                Name = oldTradesman.Name,
-                Balance = oldTradesman.Balance,
-                Password = oldTradesman.Password,
-            };
+            oldUser.Name = request.Name;
+            oldUser.Email = request.Email;
+            oldUser.Balance = request.Balance;
+            oldUser.Password = request.Password;
 
             //Update
-            _context.Tradesmans.Update(tradesmanUpdated);
+            _context.Users.Update(oldUser);
             _context.SaveChanges();
         }
 
@@ -79,7 +75,7 @@ namespace PagLogo.Services
             var result = GetTradesmanByIdentifier(identifier);
 
             //Delete
-            _context.Tradesmans.Remove(result);
+            _context.Users.Remove(result);
             _context.SaveChanges();
         }
     }

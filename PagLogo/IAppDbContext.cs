@@ -5,8 +5,7 @@ namespace PagLogo
 {
     public interface IAppDbContext : IDisposable
     {
-        DbSet<Generic>? Generics { get; set; }
-        DbSet<Tradesman>? Tradesmans { get; set; }
+        DbSet<User>? Users { get; set; }
         int SaveChanges();
     }
 }
