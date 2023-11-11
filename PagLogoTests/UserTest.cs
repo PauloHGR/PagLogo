@@ -71,7 +71,7 @@ namespace PagLogoTests
             string identifier = "123456/1000";
             var result = async () => await service.GetUserAsync(identifier);
 
-            Assert.Equal(new UserException("Não encontrado").Message, 
+            Assert.Equal(new UserException("Usuário não encontrado.").Message, 
                 Assert.ThrowsAsync<UserException>(result).Result.Message);
         }
 

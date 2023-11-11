@@ -9,16 +9,23 @@ namespace PagLogo.Services
         public UserService(IAppDbContext context) { 
             _context = context;
         }
-        public async Task<User> GetUserAsync(string identifier)
+
+        private Tradesman GetTradesmanByIdentifier(string identifier)
         {
             var result = _context.Tradesmans.Select(user => user)
                 .Where(a => a.Cnpj == identifier).FirstOrDefault();
 
-            if(result == null) { 
-                throw new UserException("Não encontrado");
+            if (result == null)
+            {
+                throw new UserException("Usuário não encontrado.");
             }
 
             return result;
+        }
+
+        public async Task<User> GetUserAsync(string identifier)
+        {
+            return GetTradesmanByIdentifier(identifier);
         }
 
         public async Task SaveUserAsync(Tradesman tradesman)
@@ -41,11 +48,7 @@ namespace PagLogo.Services
         {
             //Validate
 
-            var oldTradesman = _context.Tradesmans.Select(user => user).Where(a => a.Cnpj == request.Cnpj).FirstOrDefault();
-            if (oldTradesman == null)
-            {
-                throw new UserException("Usuário não encontrado.");
-            }
+            var oldTradesman = GetTradesmanByIdentifier(request.Cnpj); ;
 
             var result = _context.Tradesmans.Select(user => user)
                .Where(a => (a.Cnpj == request.Cnpj || a.Email == request.Email)
@@ -65,21 +68,15 @@ namespace PagLogo.Services
                 Password = oldTradesman.Password,
             };
 
-            //Save
+            //Update
             _context.Tradesmans.Update(tradesmanUpdated);
             _context.SaveChanges();
         }
 
         public async Task DeleteUserAsync(string identifier)
         {
-            //Validate
-            var result = _context.Tradesmans.Select(user => user)
-                 .Where(a => a.Cnpj == identifier).FirstOrDefault();
-
-            if (result == null)
-            {
-                throw new UserException("Usuário não encontrado.");
-            }
+            //Operation
+            var result = GetTradesmanByIdentifier(identifier);
 
             //Delete
             _context.Tradesmans.Remove(result);
