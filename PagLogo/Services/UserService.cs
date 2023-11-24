@@ -28,6 +28,11 @@ namespace PagLogo.Services
             return GetTradesmanByIdentifier(identifier);
         }
 
+        public async Task<List<User>> GetAllUsers()
+        {
+            return _context.Users.Select(x => x).ToList();
+        }
+
         public async Task SaveUserAsync(User user)
         {
             //Validate

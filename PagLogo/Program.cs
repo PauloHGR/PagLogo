@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                 User ID = SA; Password = Root@123; Trusted_Connection = False")
 );
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();
 
 var app = builder.Build();
