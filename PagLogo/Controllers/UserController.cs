@@ -21,46 +21,65 @@ namespace PagLogo.Controllers
             _transactionService = transactionService;
         }
 
+        [HttpGet("{identifier}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetUsers(string identifier)
+        {
+            var result = await _userService.GetUserAsync(identifier);
+            return this.Ok(result);
+        }
+
         [HttpGet]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
-        public async Task<User> GetUsers([FromQuery] string identifier)
-        {
-            var result = await _userService.GetUserAsync(identifier);
-            return result;
-        }
-
-        [HttpGet("all")]
-        [ProducesResponseType(200)]
-        [ProducesResponseType(404)]
-        public async Task<List<User>> GetAllUsers()
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> GetAllUsers()
         {
             var result = await _userService.GetAllUsers();
-            return result;
+            return this.Ok(result);
         }
 
         [HttpPost]
-        public async Task SaveUser([FromBody] User user)
+        [ProducesResponseType(201)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> SaveUser([FromBody] User user)
         {
             await _userService.SaveUserAsync(user);
+            return this.Created("User",user);
         }
 
         [HttpPut]
-        public async Task UpdateUser([FromBody] User user)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> UpdateUser([FromBody] User user)
         {
             await _userService.UpdateUserAsync(user);
+            return this.NoContent();
         }
 
         [HttpDelete]
-        public async Task DeleteUser([FromQuery] string identifier)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> DeleteUser([FromQuery] string identifier)
         {
             await _userService.DeleteUserAsync(identifier);
+            return this.NoContent();
         }
 
         [HttpGet("transaction")]
-        public async Task CallTransactionAsync([FromQuery] TransactionFilterRequest request)
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public async Task<IActionResult> CallTransactionAsync([FromQuery] TransactionFilterRequest request)
         {
             await _transactionService.CallTransactionAsync(request);
+            return this.NoContent();
         }
 
     }
