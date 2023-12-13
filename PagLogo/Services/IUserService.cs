@@ -1,4 +1,5 @@
 ﻿using PagLogo.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PagLogo.Services
 {
@@ -9,5 +10,7 @@ namespace PagLogo.Services
         Task SaveUserAsync(User user);
         Task UpdateUserAsync(User user);
         Task DeleteUserAsync(string identifier);
+
+        Task<JwtSecurityToken> AuthenticateUser(LoginRequest loginRequest);
     }
 }

@@ -1,13 +1,19 @@
-﻿using PagLogo.Exceptions;
+﻿using Microsoft.IdentityModel.Tokens;
+using PagLogo.Exceptions;
 using PagLogo.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace PagLogo.Services
 {
     public class UserService : IUserService
     {
         private readonly IAppDbContext _context;
-        public UserService(IAppDbContext context) { 
+        private readonly IConfiguration _configuration;
+        public UserService(IAppDbContext context, IConfiguration configuration) { 
             _context = context;
+            _configuration = configuration;
         }
 
         private User GetTradesmanByIdentifier(string identifier)
@@ -82,6 +88,42 @@ namespace PagLogo.Services
             //Delete
             _context.Users.Remove(result);
             _context.SaveChanges();
+        }
+
+        private bool CheckPassword(string userPassword, string requestPassword)
+        {
+            return string.Equals(userPassword, requestPassword);
+        }
+
+        public async Task<JwtSecurityToken> AuthenticateUser(LoginRequest loginRequest)
+        {
+            var user = GetTradesmanByIdentifier(loginRequest.Identifier);
+
+            if(user != null && CheckPassword(user.Password, loginRequest.Password)) {
+
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Identifier),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Role, "User")
+                };
+
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["JWT:ValidIssuer"],
+                    audience: _configuration["JWT:ValidAudience"],
+                    expires: DateTime.Now.AddHours(12),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+
+                return token;
+
+            } else
+            {
+                throw new AuthenticateException("User not existent or password incorrect");
+            }
         }
     }
 }
