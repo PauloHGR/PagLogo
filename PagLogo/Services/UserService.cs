@@ -35,18 +35,32 @@ namespace PagLogo.Services
             return GetTradesmanByIdentifier(identifier);
         }
 
+        private bool isValidRequestFilter(UserFilterRequest request)
+        {
+
+            if(!string.IsNullOrEmpty(request.Name) || 
+                !string.IsNullOrEmpty(request.Email) || 
+                !string.IsNullOrEmpty(request.Identifier) || 
+                !(request.UserType == 0))
+                return true;
+
+            return false;
+        }
+
         public async Task<List<User>> GetAllUsers(UserFilterRequest request)
         {
             IQueryable<User> query = _context.Users;
-            if(request == null) //@TODO -> função de validar
-                return query.Select(x => x).ToList();
+            if(!isValidRequestFilter(request))
+                return query.Select(x => x).OrderBy(a => a.Name).ToList();
             else
             {
                  return query.Select(user => user)
                 .Where(a => (a.Name.Contains(request.Name) ||
                             a.Identifier.Contains(request.Identifier) ||
                             a.UserType == request.UserType ||
-                            a.Email.Contains(request.Email))).ToList();
+                            a.Email.Contains(request.Email)))
+                .OrderBy(a => a.Name)
+                .ToList();
             }
         }
 
