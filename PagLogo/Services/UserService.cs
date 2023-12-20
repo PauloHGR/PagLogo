@@ -4,6 +4,7 @@ using PagLogo.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PagLogo.Services
 {
@@ -34,9 +35,19 @@ namespace PagLogo.Services
             return GetTradesmanByIdentifier(identifier);
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsers(UserFilterRequest request)
         {
-            return _context.Users.Select(x => x).ToList();
+            IQueryable<User> query = _context.Users;
+            if(request == null) //@TODO -> função de validar
+                return query.Select(x => x).ToList();
+            else
+            {
+                 return query.Select(user => user)
+                .Where(a => (a.Name.Contains(request.Name) ||
+                            a.Identifier.Contains(request.Identifier) ||
+                            a.UserType == request.UserType ||
+                            a.Email.Contains(request.Email))).ToList();
+            }
         }
 
         public async Task SaveUserAsync(User user)

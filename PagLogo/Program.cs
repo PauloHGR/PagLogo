@@ -14,10 +14,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<AppDbContext>(options => 
-        options.UseSqlServer(@"Server=localhost,1433; Database=TestDB; 
-                User ID = SA; Password = Root@123; Trusted_Connection = False")
-);
+var _getConnectionString = builder.Configuration.GetConnectionString("connSQLSERVER");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(_getConnectionString));
 
 builder.Services.AddAuthentication(options =>
 {
