@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using PagLogo.Exceptions;
 using PagLogo.Models;
 using PagLogo.Services;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace PagLogo.Controllers
 {
@@ -22,6 +25,7 @@ namespace PagLogo.Controllers
         }
 
         [HttpGet("{identifier}")]
+        [Authorize]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
@@ -80,6 +84,27 @@ namespace PagLogo.Controllers
         {
             await _transactionService.CallTransactionAsync(request);
             return this.NoContent();
+        }
+
+        [HttpPost("login")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> LoginAsync([FromQuery] LoginRequest request)
+        {
+            var tokenResult = await _userService.AuthenticateUser(request);
+
+           try
+            {
+                return Ok(new { 
+                    token = new JwtSecurityTokenHandler().WriteToken(tokenResult),
+                    expiration = tokenResult.ValidTo
+                });
+            }
+            catch (AuthenticateException ex)
+            {
+                return Unauthorized(ex);
+            }
+            
         }
 
     }
