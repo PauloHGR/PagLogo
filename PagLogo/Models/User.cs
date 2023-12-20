@@ -1,4 +1,5 @@
-﻿using PagLogo.Enums;
+﻿using Microsoft.AspNetCore.Identity;
+using PagLogo.Enums;
 using System.Data.Common;
 
 namespace PagLogo.Models

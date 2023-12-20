@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PagLogo;
 using PagLogo.Models;
 using PagLogo.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,27 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseSqlServer(@"Server=localhost,1433; Database=TestDB; 
                 User ID = SA; Password = Root@123; Trusted_Connection = False")
 );
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:ValidAudience"],
+        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+    };
+});
+
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAppDbContext, AppDbContext>();
@@ -30,6 +54,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
