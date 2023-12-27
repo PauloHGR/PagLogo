@@ -2,21 +2,18 @@
 
 namespace PagLogo.Models
 {
-    public class UserFilterRequest
+    public class UserResponse
     {
         public string? Name { get; set; }
         public string? Email { get; set; }
+        public string? Password { get; set; }
+        public double? Balance { get; set; }
         public UserType UserType { get; set; }
         public string? Identifier { get; set; }
-        public SortOrder SortOrder { get; set; }
-        public UserSortField SortField { get; set; }
-        public int Size { get; set; } = 20;
-        public int Offset { get; set; } = 0;
 
-        public string GetExpression()
+        public string GetExpression(SortOrder SortOrder, UserSortField SortField)
         {
             return SortOrder.ToString() + " " + SortField.ToString();
         }
-
     }
 }

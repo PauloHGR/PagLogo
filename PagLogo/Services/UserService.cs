@@ -1,7 +1,9 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PagLogo.Exceptions;
 using PagLogo.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
@@ -49,18 +51,40 @@ namespace PagLogo.Services
 
         public async Task<List<User>> GetAllUsers(UserFilterRequest request)
         {
-            IQueryable<User> query = _context.Users;
-            if(!isValidRequestFilter(request))
-                return query.Select(x => x).OrderBy(a => a.Name).ToList();
+            IQueryable<User> _userContext = _context.Users;
+            if (!isValidRequestFilter(request))
+            {
+                var query = _userContext.Select(x => x);
+                query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(a => a.Name) : query.OrderBy(a => a.Name);
+                query = query.Skip(request.Offset).Take(request.Size);
+                var result = query.ToList();
+
+                return result;
+            }
             else
             {
-                 return query.Select(user => user)
-                .Where(a => (a.Name.Contains(request.Name) ||
-                            a.Identifier.Contains(request.Identifier) ||
-                            a.UserType == request.UserType ||
-                            a.Email.Contains(request.Email)))
-                .OrderBy(a => a.Name)
-                .ToList();
+                var query = _userContext.Select(user => user)
+                    .Where(a => (a.Name.Contains(request.Name) ||
+                        a.Identifier.Contains(request.Identifier) ||
+                        a.UserType == request.UserType ||
+                        a.Email.Contains(request.Email)))
+                    .Select(user => new User
+                    {
+                        Name = user.Name,
+                        Email = user.Email,
+                        Password = user.Password,
+                        Balance = user.Balance,
+                        UserType = user.UserType,
+                        Identifier = user.Identifier
+
+                    });
+
+                query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(a => a.Name) : query.OrderBy(a => request.SortField);
+                query = query.Skip(request.Offset).Take(request.Size);
+
+                var result = query.ToList();
+
+                return result;
             }
         }
 
