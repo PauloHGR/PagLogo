@@ -2,6 +2,7 @@
 {
     public enum UserSortField
     {
+        Id,
         Name,
         Email,
         Balance,

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.Metadata;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PagLogo.Exceptions;
 using PagLogo.Models;
@@ -49,43 +50,53 @@ namespace PagLogo.Services
             return false;
         }
 
-        public async Task<List<User>> GetAllUsers(UserFilterRequest request)
+        private IEnumerable<UserResponse> ConfigureSortingAndPagination(IQueryable<UserResponse> query,UserFilterRequest request)
+        {
+            Expression<Func<UserResponse, object>> keySelector = request.SortField.ToString() switch
+            {
+                "Name" => user => user.Name,
+                "Email" => user => user.Email,
+                "Balance" => user => user.Balance,
+                "Identifier" => user => user.Identifier,
+                "UserType" => user => user.UserType,
+                _ => user => user.Id,
+            };
+            query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(keySelector) : 
+                query.OrderBy(keySelector);
+            query = query.Skip(request.Offset).Take(request.Size);
+            var result = query.ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<UserResponse>> GetAllUsers(UserFilterRequest request)
         {
             IQueryable<User> _userContext = _context.Users;
-            if (!isValidRequestFilter(request))
-            {
-                var query = _userContext.Select(x => x);
-                query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(a => a.Name) : query.OrderBy(a => a.Name);
-                query = query.Skip(request.Offset).Take(request.Size);
-                var result = query.ToList();
+            var query = _userContext;
 
-                return result;
-            }
-            else
+            if (isValidRequestFilter(request))
             {
-                var query = _userContext.Select(user => user)
+                query = query
                     .Where(a => (a.Name.Contains(request.Name) ||
                         a.Identifier.Contains(request.Identifier) ||
                         a.UserType == request.UserType ||
-                        a.Email.Contains(request.Email)))
-                    .Select(user => new User
-                    {
-                        Name = user.Name,
-                        Email = user.Email,
-                        Password = user.Password,
-                        Balance = user.Balance,
-                        UserType = user.UserType,
-                        Identifier = user.Identifier
-
-                    });
-
-                query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(a => a.Name) : query.OrderBy(a => request.SortField);
-                query = query.Skip(request.Offset).Take(request.Size);
-
-                var result = query.ToList();
-
-                return result;
+                        a.Email.Contains(request.Email)));
             }
+
+            var userConverted = query.Select(user => new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Password = user.Password,
+                Balance = user.Balance,
+                UserType = user.UserType,
+                Identifier = user.Identifier,
+
+            });
+            var result = ConfigureSortingAndPagination(userConverted, request);
+
+            return result;
         }
 
         public async Task SaveUserAsync(User user)
