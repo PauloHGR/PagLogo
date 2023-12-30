@@ -3,6 +3,6 @@
     public enum UserType
     {
         Cnpj = 1,
-        Cpf = 2
+        Cpf = 2,
     }
 }

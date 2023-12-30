@@ -1,9 +1,13 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Http.Metadata;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PagLogo.Exceptions;
 using PagLogo.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PagLogo.Services
 {
@@ -34,9 +38,68 @@ namespace PagLogo.Services
             return GetTradesmanByIdentifier(identifier);
         }
 
-        public async Task<List<User>> GetAllUsers()
+        private bool isValidRequestFilter(UserFilterRequest request)
         {
-            return _context.Users.Select(x => x).ToList();
+
+            if(!string.IsNullOrEmpty(request.Name) || 
+                !string.IsNullOrEmpty(request.Email) || 
+                !string.IsNullOrEmpty(request.Identifier) || 
+                !(request.UserType == 0))
+                return true;
+
+            return false;
+        }
+
+        private IQueryable<User> ConfigureSortingAndPagination(IQueryable<User> query,UserFilterRequest request)
+        {
+            Expression<Func<User, object>> keySelector = request.SortField.ToString() switch
+            {
+                "Name" => user => user.Name,
+                "Email" => user => user.Email,
+                "Balance" => user => user.Balance,
+                "Identifier" => user => user.Identifier,
+                "UserType" => user => user.UserType,
+                _ => user => user.Id,
+            };
+            query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(keySelector) : 
+                query.OrderBy(keySelector);
+            query = query.Skip(request.Offset).Take(request.Size);
+            //var result = query.ToList();
+
+            return query;
+        }
+
+        public async Task<IEnumerable<UserResponse>> GetAllUsers(UserFilterRequest request)
+        {
+            IQueryable<User> _userContext = _context.Users;
+            var query = _userContext;
+
+            if (isValidRequestFilter(request))
+            {
+                query = query
+                    .Select(user => user)
+                    .Where(a => a.Name.Contains(request.Name) ||
+                        a.Identifier.Contains(request.Identifier) ||
+                        (a.UserType == request.UserType) ||
+                        a.Email.Contains(request.Email));
+            }
+
+            query = ConfigureSortingAndPagination(query, request);
+
+            var result = query.Select(user => new UserResponse
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email,
+                Password = user.Password,
+                Balance = user.Balance,
+                UserType = user.UserType,
+                Identifier = user.Identifier,
+
+            }).ToList();
+            //var result = ConfigureSortingAndPagination(userConverted, request);
+
+            return result;
         }
 
         public async Task SaveUserAsync(User user)
