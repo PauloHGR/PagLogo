@@ -39,9 +39,9 @@ namespace PagLogo.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers([FromQuery] UserFilterRequest request)
         {
-            var result = await _userService.GetAllUsers();
+            var result = await _userService.GetAllUsers(request);
             return this.Ok(result);
         }
 

@@ -5,7 +5,7 @@ namespace PagLogo.Services
 {
     public interface IUserService
     {
-        Task<List<User>> GetAllUsers();
+        Task<IEnumerable<UserResponse>> GetAllUsers(UserFilterRequest request);
         Task<User> GetUserAsync(string identifier);
         Task SaveUserAsync(User user);
         Task UpdateUserAsync(User user);
