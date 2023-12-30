@@ -13,10 +13,5 @@ namespace PagLogo.Models
         public int Size { get; set; } = 20;
         public int Offset { get; set; } = 0;
 
-        public string GetExpression()
-        {
-            return SortOrder.ToString() + " " + SortField.ToString();
-        }
-
     }
 }

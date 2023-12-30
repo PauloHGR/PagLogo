@@ -12,9 +12,5 @@ namespace PagLogo.Models
         public UserType UserType { get; set; }
         public string? Identifier { get; set; }
 
-        public string GetExpression(SortOrder SortOrder, UserSortField SortField)
-        {
-            return SortOrder.ToString() + " " + SortField.ToString();
-        }
     }
 }

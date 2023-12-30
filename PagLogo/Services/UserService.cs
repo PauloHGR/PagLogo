@@ -50,9 +50,9 @@ namespace PagLogo.Services
             return false;
         }
 
-        private IEnumerable<UserResponse> ConfigureSortingAndPagination(IQueryable<UserResponse> query,UserFilterRequest request)
+        private IQueryable<User> ConfigureSortingAndPagination(IQueryable<User> query,UserFilterRequest request)
         {
-            Expression<Func<UserResponse, object>> keySelector = request.SortField.ToString() switch
+            Expression<Func<User, object>> keySelector = request.SortField.ToString() switch
             {
                 "Name" => user => user.Name,
                 "Email" => user => user.Email,
@@ -64,9 +64,9 @@ namespace PagLogo.Services
             query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(keySelector) : 
                 query.OrderBy(keySelector);
             query = query.Skip(request.Offset).Take(request.Size);
-            var result = query.ToList();
+            //var result = query.ToList();
 
-            return result;
+            return query;
         }
 
         public async Task<IEnumerable<UserResponse>> GetAllUsers(UserFilterRequest request)
@@ -77,13 +77,16 @@ namespace PagLogo.Services
             if (isValidRequestFilter(request))
             {
                 query = query
-                    .Where(a => (a.Name.Contains(request.Name) ||
+                    .Select(user => user)
+                    .Where(a => a.Name.Contains(request.Name) ||
                         a.Identifier.Contains(request.Identifier) ||
-                        a.UserType == request.UserType ||
-                        a.Email.Contains(request.Email)));
+                        (a.UserType == request.UserType) ||
+                        a.Email.Contains(request.Email));
             }
 
-            var userConverted = query.Select(user => new UserResponse
+            query = ConfigureSortingAndPagination(query, request);
+
+            var result = query.Select(user => new UserResponse
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -93,8 +96,8 @@ namespace PagLogo.Services
                 UserType = user.UserType,
                 Identifier = user.Identifier,
 
-            });
-            var result = ConfigureSortingAndPagination(userConverted, request);
+            }).ToList();
+            //var result = ConfigureSortingAndPagination(userConverted, request);
 
             return result;
         }
