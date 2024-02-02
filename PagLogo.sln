@@ -5,10 +5,12 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PagLogo", "PagLogo\PagLogo.csproj", "{9552D342-D466-4CCF-B8AE-B44C596583AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagLogoTests", "PagLogoTests\PagLogoTests.csproj", "{6D0F3819-FD28-4448-8A7E-8AD354177D17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PagLogoTests", "PagLogoTests\PagLogoTests.csproj", "{6D0F3819-FD28-4448-8A7E-8AD354177D17}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9552D342-D466-4CCF-B8AE-B44C596583AE} = {9552D342-D466-4CCF-B8AE-B44C596583AE}
 	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{D32B9194-C572-463A-8745-88CC7C885FB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +26,10 @@ Global
 		{6D0F3819-FD28-4448-8A7E-8AD354177D17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D0F3819-FD28-4448-8A7E-8AD354177D17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D0F3819-FD28-4448-8A7E-8AD354177D17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D32B9194-C572-463A-8745-88CC7C885FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32B9194-C572-463A-8745-88CC7C885FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32B9194-C572-463A-8745-88CC7C885FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32B9194-C572-463A-8745-88CC7C885FB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
