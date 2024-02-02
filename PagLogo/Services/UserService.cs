@@ -64,7 +64,6 @@ namespace PagLogo.Services
             query = (request.SortOrder == Enums.SortOrder.DESC) ? query.OrderByDescending(keySelector) : 
                 query.OrderBy(keySelector);
             query = query.Skip(request.Offset).Take(request.Size);
-            //var result = query.ToList();
 
             return query;
         }
@@ -97,7 +96,6 @@ namespace PagLogo.Services
                 Identifier = user.Identifier,
 
             }).ToList();
-            //var result = ConfigureSortingAndPagination(userConverted, request);
 
             return result;
         }
