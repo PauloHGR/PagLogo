@@ -1,0 +1,29 @@
+version: '3.4'
+
+services:
+  paglogo:
+    image: ${DOCKER_REGISTRY-}paglogo
+    container_name: paglogo.api
+    build:
+      context: .
+      dockerfile: PagLogo/Dockerfile
+    ports:
+        - "44378:44378"
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: paglogo.database
+    hostname: paglogo.database
+    environment:
+        ACCEPT_EULA: "Y"
+        MSSQL_SA_PASSWORD: "123"
+    ports:
+        - "1433:1433"
+
+  mssqltools:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+        - sqlserver
+    volumes:
+        - ./DB.sql:/tmp/DB.sql
+        - ./init-db.sh:/tmp/init-db.sh
+    command: /bin/bash ./tmp/init-db.sh
