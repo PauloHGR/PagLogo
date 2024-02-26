@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
 using PagLogo.Exceptions;
@@ -10,7 +11,8 @@ namespace PagLogo.Controllers
 {
 
     [ApiController]
-    [Route("/api/v1/[controller]")]
+    [Route("/api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
